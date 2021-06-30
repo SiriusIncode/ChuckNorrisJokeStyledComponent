@@ -3,23 +3,28 @@ import { useEffect, useState } from "react";
 import Comments from "./Components/Comments";
 import Button from "./styledComponents/Button";
 import Input, { Textarea } from "./styledComponents/Input";
-import Wrapper, { JokeWrapper, ButtonsWrapper } from "./styledComponents/Wrapper";
+import Wrapper, {
+  JokeWrapper,
+  ButtonsWrapper,
+} from "./styledComponents/Wrapper";
 import Avatar from "./styledComponents/Avatar";
-// import loadJoke from "./services/jokeService";
+import loadJoke from "./services/jokeService";
 import loadComments from "./services/comentService";
 import generateRandomColor from "./helpers";
-import {useSelector} from 'react-redux';
+import { setComment } from "./reducers/commentReducer";
+import { setName } from "./reducers/nameReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function App() {
-
-  const joke = useSelector(state => state.name.value);
+  const [joke, setJoke] = useState({});
   const [comments, setComments] = useState([]);
-  const [comment, setComment] = useState("");
-  const [name, setName] = useState("");
-  
+  const comment = useSelector((state) => state.comment.value);
+  const name = useSelector((state) => state.name.value);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // loadJoke();
-    loadComments();
+    loadJoke(setJoke);
+    loadComments(setComments);
   }, []);
 
   const sendComment = () => {
@@ -28,7 +33,7 @@ export default function App() {
       time: new Date(),
       body: comment,
       icoColor: generateRandomColor(),
-      name
+      name,
     });
 
     setComments(copyComments);
@@ -53,17 +58,13 @@ export default function App() {
         <Input
           placeholder="User Name"
           type="text"
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
+          onChange={(e) => dispatch(setName(e.target.value))}
           value={name}
         />
         <Textarea
           as="textarea"
           placeholder="Comment"
-          onChange={(e) => {
-            setComment(e.target.value);
-          }}
+          onChange={(e) => dispatch(setComment(e.target.value))}
           value={comment}
         />
         <ButtonsWrapper>
@@ -73,9 +74,9 @@ export default function App() {
           <Button secondary onClick={resetInputs}>
             reset inputs
           </Button>
-          {/* <Button secondary onClick={loadJoke}>
+          <Button secondary onClick={() => loadJoke(setJoke)}>
             reset joke
-          </Button> */}
+          </Button>
         </ButtonsWrapper>
       </Wrapper>
 
