@@ -27,7 +27,7 @@ const Comments = ({ commentsList }) => {
           .slice((page - 1) * range, page * range)
           .map((comment, index) => (
             <Comment
-              key={comment.time ? comment.time : comment.id}
+              key={comment.id}
               index={index}
             >
               <ComentAvatar background={comment.icoColor}></ComentAvatar>

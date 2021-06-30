@@ -1,7 +1,4 @@
-import {setJoke} from '../reducers/jokeReducer';
-
-
-const loadJoke = (done) => {
+const loadJoke = async (done) => {
   fetch("https://api.chucknorris.io/jokes/random/")
     .then((res) => res.json())
     .then((res) => {

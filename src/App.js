@@ -14,37 +14,56 @@ import generateRandomColor from "./helpers";
 import { setComment } from "./reducers/commentReducer";
 import { setName } from "./reducers/nameReducer";
 import { useDispatch, useSelector } from "react-redux";
+import { setJoke } from "./reducers/jokeReducer";
+import { setComments } from "./reducers/commentsReducer";
+import { setLoaded } from "./reducers/loadedReducer";
+import { nanoid } from '@reduxjs/toolkit'
 
 export default function App() {
-  const [joke, setJoke] = useState({});
-  const [comments, setComments] = useState([]);
+  const joke = useSelector((state) => state.joke.value);
+  const comments = useSelector((state) => state.comments.value);
   const comment = useSelector((state) => state.comment.value);
   const name = useSelector((state) => state.name.value);
+  const loaded = useSelector((state) => state.loaded.value);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    loadJoke(setJoke);
-    loadComments(setComments);
+      loadJoke((joke) => dispatch(setJoke(joke)))
+      loadComments((comment) => dispatch(setComments(comment)))
+      dispatch(setLoaded(true))
   }, []);
 
   const sendComment = () => {
-    const copyComments = comments;
+    const copyComments = [...comments];
     copyComments.unshift({
       time: new Date(),
       body: comment,
       icoColor: generateRandomColor(),
       name,
+      id: nanoid()
     });
 
-    setComments(copyComments);
-    setName("");
-    setComment("");
+    dispatch(setComments(copyComments));
+    dispatch(setName(""));
+    dispatch(setComment(""));
   };
 
   const resetInputs = () => {
-    setName("");
-    setComment("");
+    dispatch(setName(""));
+    dispatch(setComment(""));
   };
+  console.log(loaded);
+
+  if (!loaded)
+    return (
+      <div className="loaderWreapper">
+        <div className="lds-facebook">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="App">
@@ -74,7 +93,10 @@ export default function App() {
           <Button secondary onClick={resetInputs}>
             reset inputs
           </Button>
-          <Button secondary onClick={() => loadJoke(setJoke)}>
+          <Button
+            secondary
+            onClick={() => loadJoke((joke) => dispatch(setJoke(joke)))}
+          >
             reset joke
           </Button>
         </ButtonsWrapper>
