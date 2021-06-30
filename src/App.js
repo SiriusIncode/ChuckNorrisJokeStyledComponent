@@ -1,23 +1,25 @@
 import "./styles.css";
 import { useEffect, useState } from "react";
-import Comments from "./Comments";
-import Button from "./Button";
-import Input, { Textarea } from "./Input";
-import Wrapper, { JokeWrapper, ButtonsWrapper } from "./Wrapper";
-import Avatar from "./Avatar";
-import loadJoke from "./jokeService";
-import loadComments from "./comentService";
+import Comments from "./Components/Comments";
+import Button from "./styledComponents/Button";
+import Input, { Textarea } from "./styledComponents/Input";
+import Wrapper, { JokeWrapper, ButtonsWrapper } from "./styledComponents/Wrapper";
+import Avatar from "./styledComponents/Avatar";
+// import loadJoke from "./services/jokeService";
+import loadComments from "./services/comentService";
 import generateRandomColor from "./helpers";
+import {useSelector} from 'react-redux';
 
 export default function App() {
-  const [joke, setJoke] = useState({});
+
+  const joke = useSelector(state => state.name.value);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [name, setName] = useState("");
-
+  
   useEffect(() => {
-    loadJoke(setJoke);
-    loadComments(setComments);
+    // loadJoke();
+    loadComments();
   }, []);
 
   const sendComment = () => {
@@ -71,9 +73,9 @@ export default function App() {
           <Button secondary onClick={resetInputs}>
             reset inputs
           </Button>
-          <Button secondary onClick={() => loadJoke(setJoke)}>
+          {/* <Button secondary onClick={loadJoke}>
             reset joke
-          </Button>
+          </Button> */}
         </ButtonsWrapper>
       </Wrapper>
 
