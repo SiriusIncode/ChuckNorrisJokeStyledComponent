@@ -8,42 +8,35 @@ import Wrapper, {
   ButtonsWrapper,
 } from "./styledComponents/Wrapper";
 import Avatar from "./styledComponents/Avatar";
-import loadJoke from "./services/jokeService";
-import loadComments from "./services/comentService";
 import generateRandomColor from "./helpers";
 import { setComment } from "./reducers/commentReducer";
 import { setName } from "./reducers/nameReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { setJoke } from "./reducers/jokeReducer";
-import { setComments } from "./reducers/commentsReducer";
-import { setLoaded } from "./reducers/loadedReducer";
-import { nanoid } from '@reduxjs/toolkit'
+import { getJoke } from "./reducers/jokeReducer";
+import { addComment, getComments } from "./reducers/commentsReducer";
+import { nanoid } from "@reduxjs/toolkit";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import statuses from "./statuses";
 
 export default function App() {
   const joke = useSelector((state) => state.joke.value);
+  const jokeError = useSelector((state) => state.joke.error);
+  const commentError = useSelector((state) => state.comments.error);
   const comments = useSelector((state) => state.comments.value);
   const comment = useSelector((state) => state.comment.value);
   const name = useSelector((state) => state.name.value);
-  const loaded = useSelector((state) => state.loaded.value);
+  const jokeStatus = useSelector((state) => state.joke.status);
+  const commentsStatus = useSelector((state) => state.comments.status);
   const dispatch = useDispatch();
 
   useEffect(() => {
-      loadJoke((joke) => dispatch(setJoke(joke)))
-      loadComments((comment) => dispatch(setComments(comment)))
-      dispatch(setLoaded(true))
+    dispatch(getJoke());
+    dispatch(getComments());
   }, []);
 
   const sendComment = () => {
-    const copyComments = [...comments];
-    copyComments.unshift({
-      time: new Date(),
-      body: comment,
-      icoColor: generateRandomColor(),
-      name,
-      id: nanoid()
-    });
-
-    dispatch(setComments(copyComments));
+    dispatch(addComment({time: (new Date()).toString(), comment, name}))
     dispatch(setName(""));
     dispatch(setComment(""));
   };
@@ -52,9 +45,36 @@ export default function App() {
     dispatch(setName(""));
     dispatch(setComment(""));
   };
-  console.log(loaded);
 
-  if (!loaded)
+  if (jokeError || commentError) {
+    return (
+      <ButtonsWrapper>
+        <ToastContainer />
+        {jokeError ? (
+          <Button
+            secondary
+            onClick={() => {
+              dispatch(getJoke());
+            }}
+          >
+            load joke again
+          </Button>
+        ) : null}
+        {commentError ? (
+          <Button
+            secondary
+            onClick={() => {
+              dispatch(getComments());
+            }}
+          >
+            load comments again
+          </Button>
+        ) : null}
+      </ButtonsWrapper>
+    );
+  }
+
+  if (jokeStatus === statuses.loading || commentsStatus === statuses.loading)
     return (
       <div className="loaderWreapper">
         <div className="lds-facebook">
@@ -95,7 +115,9 @@ export default function App() {
           </Button>
           <Button
             secondary
-            onClick={() => loadJoke((joke) => dispatch(setJoke(joke)))}
+            onClick={() => {
+              dispatch(getJoke());
+            }}
           >
             reset joke
           </Button>

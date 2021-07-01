@@ -1,17 +1,9 @@
-import generateRandomColor from "../helpers";
-
-const loadComments = async (done) => {
-  fetch("https://jsonplaceholder.typicode.com/comments")
-    .then((res) => res.json())
-    .then((res) => {
-      done(
-        res.map((comment) => ({
-          ...comment,
-          time: new Date(),
-          icoColor: generateRandomColor(),
-        }))
-      );
-    });
+const loadComments = async () => {
+  const res = await fetch("https://jsonplaceholder.typicode.com/comments");
+  if (res.status !== 200) {
+    throw new Error("Not Found");
+  }
+  return res.json();
 };
 
 export default loadComments;

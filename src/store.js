@@ -5,7 +5,6 @@ import jokeReducer from './reducers/jokeReducer';
 import commentReducer from './reducers/commentReducer';
 import nameReducer from './reducers/nameReducer';
 import commentsReducer from './reducers/commentsReducer';
-import loadedReducer from './reducers/loadedReducer';
 
 export default configureStore({
     reducer: {
@@ -15,6 +14,5 @@ export default configureStore({
         comment: commentReducer,
         name: nameReducer,
         comments: commentsReducer,
-        loaded: loadedReducer
     }
 })

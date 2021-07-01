@@ -4,7 +4,8 @@ const generateRandomColor = () => {
   )}, ${Math.trunc(Math.random() * 255)})`;
 };
 
-export const dateToString = (date) => {
+export const dateToString = (dateString) => {
+  const date = new Date(dateString);
   return `${date
     .getDate()
     .toString()
